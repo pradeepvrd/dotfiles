@@ -1,0 +1,8 @@
+- clean: ['~']
+
+- link:
+    ~/.config/zsh/.zshrc:
+      create: true
+      path: dotfiles/zsh/zshrc
+    ~/.zshenv:
+      path: dotfiles/zsh/zshenv

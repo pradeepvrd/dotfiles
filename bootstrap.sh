@@ -114,5 +114,4 @@ install_fonts() {
   popd
 }
 
-
-
+chsh -s /bin/zsh
