@@ -1,3 +1,7 @@
 [user]
 	name = pradeepvrd
 	email = vgpd9891@gmail.com
+[core]
+	pager = diff-so-fancy | less --tabs=4 -RFX
+[diff-so-fancy]
+	markEmptyLines = false
