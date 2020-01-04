@@ -6,3 +6,6 @@
       path: dotfiles/zsh/zshrc
     ~/.zshenv:
       path: dotfiles/zsh/zshenv
+    ~/.config/git/config:
+      create: true
+      path: dotfiles/git/config
