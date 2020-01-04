@@ -12,6 +12,7 @@ sudo apt-get install -y regolith-desktop
 
 git clone https://github.com/asdf-vm/asdf.git ~/.local/share/asdf --branch "v$ASDF_VERSION"
 
+mkdir -p $HOME/.config/asdf
 export ASDF_CONFIG_FILE=$HOME/.config/asdf/asdfrc
 export ASDF_DEFAULT_TOOL_VERSIONS_FILENAME=$HOME/.config/asdf/tool-versions
 export ASDF_DATA_DIR=$HOME/.local/share/asdf
@@ -31,11 +32,11 @@ asdf install python $(asdf list-all python 3 | grep -v dev | grep -v rc | tail -
 asdf global python 3.8.1 2.7.17
 
 asdf plugin-add ruby
-asdf install ruby $(asdf list-all ruby | grep -v dev | grep -v rc | grep -v preview | tail -1)
+asdf install ruby $(asdf list-all ruby 2 | grep -v dev | grep -v rc | grep -v preview | tail -1)
 asdf global ruby 2.7.0
 
 asdf plugin-add nodejs
-bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
+bash $HOME/.local/share/asdf/plugins/nodejs/bin/import-release-team-keyring
 asdf install nodejs $(asdf list-all nodejs | tail -1)
 asdf global nodejs 13.5.0
 
@@ -61,6 +62,8 @@ sudo apt-get install -y \
   neovim neomutt rclone direnv htop zsh code \
   docker-ce docker-ce-cli containerd.io vagrant \
   qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+
+mkdir $HOME/bin
 
 wget https://github.com/ogham/exa/releases/download/v0.9.0/exa-linux-x86_64-0.9.0.zip -O /tmp/exa.zip && \
   unzip /tmp/exa.zip && \
@@ -114,4 +117,5 @@ install_fonts() {
   popd
 }
 
+install_fonts
 chsh -s /bin/zsh
