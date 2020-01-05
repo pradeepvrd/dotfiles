@@ -1,0 +1,17 @@
+! One Dark Colors
+#define color_base03 #282c34
+#define color_base02 #353b45
+#define color_base01 #3e4451
+#define color_base00 #545862
+#define color_base0 #565c64
+#define color_base1 #abb2bf
+#define color_base2 #b6bdca
+#define color_base3 #c8ccd4
+#define color_magenta #e06c75
+#define color_orange #d19a66
+#define color_yellow #e5c07b
+#define color_green #98c379
+#define color_cyan #56b6c2
+#define color_blue #61afef
+#define color_violet #c678dd
+#define color_red #be5046
