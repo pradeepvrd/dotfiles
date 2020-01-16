@@ -1,11 +1,7 @@
-- clean: ['~']
-
 - link:
     ~/.config/zsh/.zshrc:
       create: true
       path: dotfiles/zsh/zshrc
-    ~/.zshenv:
-      path: dotfiles/zsh/zshenv
     ~/.config/git/config:
       create: true
       path: dotfiles/git/config

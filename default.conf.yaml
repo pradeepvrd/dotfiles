@@ -1,0 +1,5 @@
+- clean: ['~']
+
+- link:
+    ~/.zshenv:
+      path: dotfiles/zsh/zshenv
