@@ -3,3 +3,9 @@
 - link:
     ~/.zshenv:
       path: dotfiles/zsh/zshenv
+    ~/.config/nvim/init.vim:
+      path: dotfiles/nvim/init.vim
+      create: true
+    ~/.config/git/gitignore:
+      path: dotfiles/git/gitignore
+      create: true

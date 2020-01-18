@@ -60,6 +60,12 @@ export ASDF_DATA_DIR=$XDG_DATA_HOME/asdf
 . /usr/local/opt/asdf/asdf.sh
 . /usr/local/opt/asdf/etc/bash_completion.d/asdf.bash
 
+export WORKON_HOME=$XDG_DATA_HOME/virtualenvs
+export VIRTUALENVWRAPPER_SCRIPT=$(asdf which virtualenvwrapper.sh)
+. $(asdf which virtualenvwrapper_lazy.sh)
+
+eval "$(direnv hook zsh)"
+
 source $XDG_DATA_HOME/cargo/env
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
 
