@@ -2,44 +2,48 @@
 
 [[ -s "$HOME/.profile" ]] && source "$HOME/.profile" # Load the default .profile
 
-typeset -A ZPLGM
-ZPLG_HOME=$XDG_CACHE_HOME/zsh/zplugin
-ZPLGM[HOME_DIR]=$ZPLG_HOME
-ZPLGM[ZCOMPDUMP_PATH]=$XDG_CACHE_HOME/zsh/zcompdump
+WORDCHARS=${WORDCHARS/\/}
 
-if [[ ! -f $ZPLG_HOME/bin/zplugin.zsh ]]; then
-	git clone https://github.com/psprint/zplugin $ZPLG_HOME/bin
-	zcompile $ZPLG_HOME/bin/zplugin.zsh
+typeset -A ZINIT
+ZINIT_HOME=$XDG_CACHE_HOME/zsh/zinit
+ZINIT[HOME_DIR]=$ZINIT_HOME
+ZINIT[ZCOMPDUMP_PATH]=$XDG_CACHE_HOME/zsh/zcompdump
+
+if [[ ! -f $ZINIT_HOME/bin/zinit.zsh ]]; then
+	git clone https://github.com/zdharma/zinit $ZINIT_HOME/bin
+	zcompile $ZINIT_HOME/bin/zinit.zsh
 fi
-source $ZPLG_HOME/bin/zplugin.zsh
+source $ZINIT_HOME/bin/zinit.zsh
 load=light
 
-HISTSIZE=100000             			# How many lines of history to keep in memory
-HISTFILE=$XDG_CACHE_HOME/zsh/zsh_history    	# Where to save history to disk
-SAVEHIST=100000             			# Number of history entries to save to disk
+HISTSIZE=2000000				# How many lines of history to keep in memory
+HISTFILE=$XDG_CACHE_HOME/zsh/zsh_history	# Where to save history to disk
+SAVEHIST=2000000				# Number of history entries to save to disk
 setopt hist_ignore_all_dups 			# remove older duplicate entries from history
 setopt hist_reduce_blanks   			# remove superfluous blanks from history items
 setopt inc_append_history   			# save history entries as soon as they are entered
 setopt share_history        			# share history between different instances of the shell
 
-zplugin $load willghatch/zsh-saneopt
+fpath=($ZDOTDIR/completion $fpath)
 
-zplugin $load mafredri/zsh-async
-zplugin $load rupa/z
-zplugin $load sindresorhus/pure
+zinit $load willghatch/zsh-saneopt
 
-zplugin ice silent wait:1 atload:_zsh_autosuggest_start
-zplugin $load zsh-users/zsh-autosuggestions
+zinit $load mafredri/zsh-async
+zinit $load rupa/z
+zinit $load sindresorhus/pure
 
-zplugin ice blockf; zplugin $load zsh-users/zsh-completions
+zinit ice silent wait:1 atload:_zsh_autosuggest_start
+zinit $load zsh-users/zsh-autosuggestions
 
-zplugin ice silent wait!1 atload"ZPLGM[COMPINIT_OPTS]=-C; zpcompinit"
-zplugin $load zdharma/fast-syntax-highlighting
+zinit ice blockf; zplugin $load zsh-users/zsh-completions
+
+zinit ice silent wait!1 atload"ZINIT[COMPINIT_OPTS]=-C; zpcompinit"
+zinit $load zdharma/fast-syntax-highlighting
 
 autoload -Uz compinit
 compinit
 
-zplugin cdreplay -q
+zinit cdreplay -q
 
 zstyle ':completion:*' menu select
 
@@ -51,12 +55,24 @@ zstyle ':completion:*' menu select                                          # se
 zstyle ':completion:*' group-name ''                                        # group results by category
 zstyle ':completion:::::' completer _expand _complete _ignored _approximate # enable approximate matches for completion
 
-export ASDF_CONFIG_FILE=$XDG_CONFIG_HOME/asdf/asdfrc
-export ASDF_DEFAULT_TOOL_VERSIONS_FILENAME=$XDG_CONFIG_HOME/asdf/tool-versions
-export ASDF_DATA_DIR=$XDG_DATA_HOME/asdf
+[ -e $HOME/.nix-profile/etc/profile.d/nix.sh ] && . $HOME/.nix-profile/etc/profile.d/nix.sh
 
-. $XDG_DATA_HOME/asdf/asdf.sh
-. $XDG_DATA_HOME/asdf/completions/asdf.bash
+if [ -n "${commands[fzf-share]}" ]; then
+  source "$(fzf-share)/key-bindings.zsh"
+  source "$(fzf-share)/completion.zsh"
+fi
 
-source $XDG_DATA_HOME/cargo/env
-source /usr/share/doc/fzf/examples/key-bindings.zsh
+if [ -n "${commands[virtualenvwrapper_lazy.sh]}" ]; then
+  export WORKON_HOME=$XDG_DATA_HOME/virtualenvs
+  source "$(which virtualenvwrapper_lazy.sh)"
+fi
+
+[ -n "${commands[direnv]}" ] && eval "$(direnv hook zsh)"
+
+if [ -n "${commands[tmux]}" ] && [ -e $HOME/.config/tmux/tmux.conf ]; then
+  alias tmux='tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf'
+fi
+
+export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+
+[ -e "$ZDOTDIR/privaterc" ] && source "$ZDOTDIR/privaterc"

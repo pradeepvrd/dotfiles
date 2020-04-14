@@ -1,0 +1,10 @@
+{
+  // python settings
+  "python.jediEnabled": false,
+  "python.formatting.provider": "black",
+  "python.formatting.blackPath": "/usr/local/bin/black",
+  // ruby settings
+  "solargraph.formatting": true,
+  "solargraph.diagnostics": true,
+  "solargraph.hover": true
+}

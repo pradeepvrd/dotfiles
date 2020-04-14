@@ -1,7 +1,4 @@
 - link:
-    ~/.config/zsh/.zshrc:
-      create: true
-      path: dotfiles/zsh/zshrc
     ~/.config/git/config:
       create: true
       path: dotfiles/git/config

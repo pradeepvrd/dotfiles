@@ -1,7 +1,10 @@
 - link:
-    ~/.config/zsh/.zshrc:
-      create: true
-      path: dotfiles/zsh/zshrc_mac
     ~/.config/alacritty/alacritty.yml:
       create: true
       path: dotfiles/alacritty/alacritty.yml
+    ~/.config/yabai/yabairc:
+      create: true
+      path: dotfiles/yabai/yabairc
+    ~/.config/skhd/skhdrc:
+      create: true
+      path: dotfiles/skhd/skhdrc
