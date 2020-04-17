@@ -11,6 +11,8 @@ silent! if plug#begin(stdpath('data') . '/plugged')
 
 Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-fugitive'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'preservim/nerdcommenter'
 
@@ -39,8 +41,11 @@ Plug 'antoinemadec/coc-fzf'
 Plug 'voldikss/vim-floaterm'
 Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim'
+Plug 'majutsushi/tagbar'
+Plug 'itchyny/lightline.vim'
 
 call plug#end()
+endif
 " }}}
 
 " Misc {{{
@@ -58,12 +63,12 @@ let g:mapleader = " "
 set history=500
 set clipboard=unnamed
 set hidden
-endif
+set noshowmode      " redundant since lighline shows the same info
 " }}}
 
 " Colors {{{
 syntax on
-silent! colorscheme gruvbox
+silent! colorscheme onedark
 set bg=dark
 
 if (has("termguicolors"))
@@ -280,5 +285,34 @@ endfunction
 
 let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
 let g:asyncrun_runner.test = function('s:my_runner')
+let g:asynctasks_edit_split = 'auto'
+
+" This ensures vim-fugitive runs the Gpull and Gfetch commands in Async
+" https://github.com/skywind3000/asyncrun.vim/wiki/Cooperate-with-famous-plugins#fugitive
+command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
 
 call SourceIfExists(stdpath('config') . '/docker.vim')
+
+" copy to attached terminal using the yank(1) script:
+" https://github.com/sunaku/home/blob/master/bin/yank
+function! Yank(text) abort
+  let escape = system('yank', a:text)
+  if v:shell_error
+    echoerr escape
+  else
+    call writefile([escape], '/dev/tty', 'b')
+  endif
+endfunction
+
+noremap <silent> <Leader>y y:<C-U>call Yank(@0)<CR>
+
+let g:lightline = {
+      \ 'colorscheme': 'onedark',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead'
+      \ },
+      \ }

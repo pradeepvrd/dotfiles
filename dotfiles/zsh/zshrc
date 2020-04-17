@@ -75,4 +75,6 @@ fi
 
 export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 
+export PATH=$HOME/bin:$PATH
+
 [ -e "$ZDOTDIR/privaterc" ] && source "$ZDOTDIR/privaterc"
