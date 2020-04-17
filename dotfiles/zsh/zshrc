@@ -40,6 +40,8 @@ zinit ice blockf; zplugin $load zsh-users/zsh-completions
 zinit ice silent wait!1 atload"ZINIT[COMPINIT_OPTS]=-C; zpcompinit"
 zinit $load zdharma/fast-syntax-highlighting
 
+zinit $load MikeDacre/tmux-zsh-vim-titles
+
 autoload -Uz compinit
 compinit
 
@@ -76,3 +78,4 @@ fi
 export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 
 [ -e "$ZDOTDIR/privaterc" ] && source "$ZDOTDIR/privaterc"
+

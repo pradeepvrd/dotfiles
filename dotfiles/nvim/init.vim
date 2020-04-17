@@ -1,3 +1,4 @@
+" vim:fileencoding=utf-8:ft=conf:foldmethod=marker
 " Neovim settings
 
 if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
@@ -13,6 +14,7 @@ Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-surround'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'preservim/nerdcommenter'
+Plug 'MikeDacre/tmux-zsh-vim-titles'
 
 " Appearance and themes
 Plug 'joshdick/onedark.vim'
@@ -39,6 +41,7 @@ Plug 'antoinemadec/coc-fzf'
 Plug 'voldikss/vim-floaterm'
 Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim'
+Plug 'puremourning/vimspector', {'do': './install_gadget.py --all --disable-tcl --enable-go --force-enable-node --force-enable-chrome'}
 
 call plug#end()
 " }}}
@@ -63,7 +66,7 @@ endif
 
 " Colors {{{
 syntax on
-silent! colorscheme gruvbox
+silent! colorscheme onedark
 set bg=dark
 
 if (has("termguicolors"))
@@ -118,7 +121,6 @@ set hlsearch            " highlight all matches
 
 set grepprg=rg\ --vimgrep
 " }}}
-
 
 " Backup {{{
 set nobackup
