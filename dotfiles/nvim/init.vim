@@ -1,51 +1,71 @@
-" vim:fileencoding=utf-8:ft=conf:foldmethod=marker
+" vim:fileencoding=utf-8:foldmethod=marker
 " Neovim settings
 
+" Plugins {{{
 if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
   silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-" Vim Plug {{{
 silent! if plug#begin(stdpath('data') . '/plugged')
 
-Plug 'tpope/vim-rsi'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-unimpaired'
-Plug 'tpope/vim-fugitive'
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'preservim/nerdcommenter'
-Plug 'MikeDacre/tmux-zsh-vim-titles'
+" Hook functions for plugin installation
+function! InstallVimspectorGadgets(info)
+  if a:info.status == 'installed' || a:info.force
+    let l:install_command = "./install_gadget.py --all --disable-tcl --enable-go --force-enable-node --force-enable-chrome"
+    if executable("brew")
+      let l:curr_path=$PATH
+      let $PATH = "/usr/local/opt/node@10/bin:" . $PATH
+      exec "!" . l:install_command
+      let $PATH = curr_path
+    elseif executable("nix-env")
+      exec '!nix-shell -p python38Packages.setuptools nodejs-10_x --run "' . l:install_command . '"'
+    else
+      exec "!" . l:install_command
+    endif
+  endif
+endfunction
+
+" Editing support or easy mapping plugins
+Plug 'tpope/vim-rsi'                                                         " Readline style Insert mode
+Plug 'tpope/vim-surround'                                                    " All about surroundings
+Plug 'tpope/vim-unimpaired'                                                  " provides complementary mappings
+Plug 'tpope/vim-fugitive'                                                    " awesome git plugin
+Plug 'tpope/vim-commentary'                                                  " easy commenting and uncommenting
+Plug 'godlygeek/tabular'                                                     " tabularize stuff based on markers
+Plug 'junegunn/fzf'                                                          " fuzzy searching
+Plug 'junegunn/fzf.vim'                                                      " fuzzy searching vim specific support
+
+" Easy navigation
+Plug 'christoomey/vim-tmux-navigator'                                        " navigation between tmux and vim panes
+Plug 'pradeepvrd/tmux-zsh-vim-titles'                                        " sync windows titles between shell, tmux and vim
 
 " Appearance and themes
 Plug 'joshdick/onedark.vim'
 Plug 'morhetz/gruvbox'
 Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'itchyny/lightline.vim'                                                 " Configurable statusline
+Plug 'edkolev/tmuxline.vim', {'on': 'Tmuxline'}                              " Generates tmux statusline to match vim status line
 
-" Syntax highlighting
-Plug 'vitalk/vim-shebang'
-Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}  " Python
-Plug 'othree/yajs.vim'                                  " Javascript
-Plug 'othree/javascript-libraries-syntax.vim'
-Plug 'HerringtonDarkholme/yats.vim'                     " Typescript
-Plug 'ekalinin/Dockerfile.vim'
-Plug 'martinda/Jenkinsfile-vim-syntax'
+" Syntax highlighting support
+Plug 'vitalk/vim-shebang'                                                    " Detect filetype based on shebang
+Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins', 'for': 'python'}      " Python
+Plug 'tmhedberg/SimpylFold'                                                  " Python folding support
+Plug 'othree/yajs.vim', {'for': 'javascript'}                                " Javascript
+Plug 'othree/javascript-libraries-syntax.vim'                                " react, vue and other libraries
+Plug 'HerringtonDarkholme/yats.vim', {'for': 'typescript'}                   " Typescript
+Plug 'ekalinin/Dockerfile.vim', {'for': 'dockerfile'}                        " Dockerfile
+Plug 'martinda/Jenkinsfile-vim-syntax', {'for': 'groovy'}                    " Jenkinsfile
 
-" Fuzzy searching
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-
-" Completion
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'antoinemadec/coc-fzf'
-
-Plug 'voldikss/vim-floaterm'
-Plug 'skywind3000/asynctasks.vim'
-Plug 'skywind3000/asyncrun.vim'
-Plug 'puremourning/vimspector', {'do': './install_gadget.py --all --disable-tcl --enable-go --force-enable-node --force-enable-chrome'}
-Plug 'majutsushi/tagbar'
-Plug 'itchyny/lightline.vim'
+" IDE like functionality
+Plug 'neoclide/coc.nvim', {'branch': 'release'}                              " automcompletion and bunch of other stuff
+Plug 'voldikss/vim-floaterm'                                                 " Floating Terminal
+Plug 'skywind3000/asyncrun.vim'                                              " Allows commands to be run asynchronously
+Plug 'skywind3000/asynctasks.vim'                                            " Define project tasks as asynchronous tasks
+Plug 'liuchengxu/vista.vim'                                                  " Side bar to show all tags
+Plug 'honza/vim-snippets'                                                    " Snippets source
+Plug 'puremourning/vimspector', {'do': function('InstallVimspectorGadgets')} " Integrated debugger
 
 call plug#end()
 endif
@@ -113,9 +133,11 @@ set showmatch           " higlight matching parenthesis
 set title
 set nostartofline
 
-set cmdheight=2			" Larger display for messages
+set cmdheight=1			" Larger display for messages
 set updatetime=300		" Smaller updatetime for CursorHold
 set shortmess+=c		" Suppress completion messages
+
+set foldmethod=syntax
 " }}}
 
 " Searching {{{
@@ -140,9 +162,137 @@ set sidescroll=6
 " }}}
 
 " Autocommands {{{
+autocmd BufWinEnter * silent! :%foldopen!
 autocmd BufEnter Dockerfile* :setlocal filetype=Dockerfile
 autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
 autocmd FileType gitcommit setlocal textwidth=72
+" }}}
+
+" coc settings {{{
+let g:coc_global_extensions = [
+  \ "coc-docker",
+  \ "coc-explorer",
+  \ "coc-floaterm",
+  \ "coc-git",
+  \ "coc-go",
+  \ "coc-json",
+  \ "coc-lists",
+  \ "coc-marketplace",
+  \ "coc-pairs",
+  \ "coc-prettier",
+  \ "coc-python",
+  \ "coc-sh",
+  \ "coc-snippets",
+  \ "coc-tasks",
+  \ "coc-terminal",
+  \ "coc-todolist",
+  \ "coc-yaml",
+  \ ]
+
+autocmd FileType vim let b:coc_pairs_disabled = ['"']
+
+" use `:OR` for organize import of current buffer
+command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+function! CocCurrentFunction()
+    return get(b:, 'coc_current_function', '')
+endfunction
+
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
+
+" }}}
+
+" fzf {{{
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \   <bang>0)
+
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+" }}}
+
+" asyncrun {{{
+
+let g:asyncrun_open = 6
+let g:asynctasks_config_name = '.vim/tasks.ini'
+let g:asynctasks_extra_config = [ "~/.config/nvim/tasks.ini" ]
+let g:asynctasks_edit_split = 'auto'
+
+" Override make command to use AsyncRun
+" This ensures vim-fugitive runs the Gpull and Gfetch commands in Async
+" https://github.com/skywind3000/asyncrun.vim/wiki/Cooperate-with-famous-plugins#fugitive
+command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
+" }}}
+
+" lightline {{{
+let g:lightline = {
+      \ 'colorscheme': 'onedark',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead',
+      \   'cocstatus': 'coc#status',
+      \   'currentfunction': 'CocCurrentFunction',
+      \ },
+      \ }
+
+autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+" }}}
+
+" Source extra configs {{{
+function! SourceIfExists(file)
+  if filereadable(expand(a:file))
+    exe 'source' a:file
+  endif
+endfunction
+
+call SourceIfExists(stdpath('config') . '/docker.vim')
+" }}}
+
+" remote yank {{{
+" copy to attached terminal using the yank(1) script:
+" https://github.com/sunaku/home/blob/master/bin/yank
+function! Yank(text) abort
+  let escape = system('yank', a:text)
+  if v:shell_error
+    echoerr escape
+  else
+    call writefile([escape], '/dev/tty', 'b')
+  endif
+endfunction
 " }}}
 
 " Custom Keymappings {{{
@@ -171,25 +321,27 @@ nnoremap <Leader>c :nohl<CR>
 nnoremap <Leader>rc :vsp ~/.config/nvim/init.vim<CR>
 nnoremap <Leader>rcs :source ~/.config/nvim/init.vim<CR>
 
-" }}}
+noremap <silent> <Leader>y y:<C-U>call Yank(@0)<CR>
 
-function! SourceIfExists(file)
-  if filereadable(expand(a:file))
-    exe 'source' a:file
-  endif
-endfunction
+nnoremap   <silent>   <F7>    :FloatermNew<CR>
+tnoremap   <silent>   <F7>    <C-\><C-n>:FloatermNew<CR>
+nnoremap   <silent>   <F8>    :FloatermPrev<CR>
+tnoremap   <silent>   <F8>    <C-\><C-n>:FloatermPrev<CR>
+nnoremap   <silent>   <F9>    :FloatermNext<CR>
+tnoremap   <silent>   <F9>    <C-\><C-n>:FloatermNext<CR>
+nnoremap   <silent>   <F10>   :FloatermToggle<CR>
+tnoremap   <silent>   <F10>   <C-\><C-n>:FloatermToggle<CR>
 
-" coc settings {{{
+nnoremap <leader>p :FZF<CR>
+nnoremap <leader>f :Rg<CR>
+nnoremap <leader>/ :Lines<CR>
+
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
+      \ pumvisible() ? coc#_select_confirm() :
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
       \ <SID>check_back_space() ? "\<TAB>" :
       \ coc#refresh()
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
 
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
@@ -210,111 +362,11 @@ nmap <silent> gr <Plug>(coc-references)
 " Use K to show documentation in preview window
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
 " Remap for rename current word
 nmap <leader>rn <Plug>(coc-rename)
-
-" Use `:Format` to format current buffer
-command! -nargs=0 Format :call CocAction('format')
 
 " Remap for format selected region
 xmap <leader>b  :Format<CR>
 nmap <leader>b  :Format<CR>
-
-" Use `:Fold` to fold current buffer
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" use `:OR` for organize import of current buffer
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-" Add status line support, for integration with other plugin, checkout `:h coc-status`
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-
-autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
 " }}}
 
-" fzf {{{
-function! s:build_quickfix_list(lines)
-  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-  copen
-  cc
-endfunction
-
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \   <bang>0)
-
-command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
-
-let g:fzf_action = {
-  \ 'ctrl-q': function('s:build_quickfix_list'),
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit' }
-
-nnoremap <leader>p :FZF<CR>
-nnoremap <leader>f :Rg<CR>
-nnoremap <leader>/ :Lines<CR>
-" }}}
-
-nnoremap   <silent>   <F7>    :FloatermNew<CR>
-tnoremap   <silent>   <F7>    <C-\><C-n>:FloatermNew<CR>
-nnoremap   <silent>   <F8>    :FloatermPrev<CR>
-tnoremap   <silent>   <F8>    <C-\><C-n>:FloatermPrev<CR>
-nnoremap   <silent>   <F9>    :FloatermNext<CR>
-tnoremap   <silent>   <F9>    <C-\><C-n>:FloatermNext<CR>
-nnoremap   <silent>   <F10>   :FloatermToggle<CR>
-tnoremap   <silent>   <F10>   <C-\><C-n>:FloatermToggle<CR>
-
-let g:asyncrun_open = 6
-let g:asynctasks_config_name = '.vim/tasks.ini'
-let g:asynctasks_extra_config = [ "~/.config/nvim/tasks.ini" ]
-
-function! s:my_runner(opts)
-    echo "run: " . a:opts.cmd
-endfunction
-
-let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
-let g:asyncrun_runner.test = function('s:my_runner')
-let g:asynctasks_edit_split = 'auto'
-
-" This ensures vim-fugitive runs the Gpull and Gfetch commands in Async
-" https://github.com/skywind3000/asyncrun.vim/wiki/Cooperate-with-famous-plugins#fugitive
-command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
-
-call SourceIfExists(stdpath('config') . '/docker.vim')
-
-" copy to attached terminal using the yank(1) script:
-" https://github.com/sunaku/home/blob/master/bin/yank
-function! Yank(text) abort
-  let escape = system('yank', a:text)
-  if v:shell_error
-    echoerr escape
-  else
-    call writefile([escape], '/dev/tty', 'b')
-  endif
-endfunction
-
-noremap <silent> <Leader>y y:<C-U>call Yank(@0)<CR>
-
-let g:lightline = {
-      \ 'colorscheme': 'onedark',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead'
-      \ },
-      \ }

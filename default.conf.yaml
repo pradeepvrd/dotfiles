@@ -6,19 +6,19 @@
       path: dotfiles/zsh/zshrc
     ~/.zshenv:
       path: dotfiles/zsh/zshenv
-    ~/.config/nvim/init.vim:
-      path: dotfiles/nvim/init.vim
-      create: true
-      relative: true
-    ~/.config/nvim/coc-settings.json:
-      path: dotfiles/nvim/coc-settings.json
+    ~/.config/nvim:
+      path: dotfiles/nvim
       create: true
       relative: true
     ~/.config/git/gitignore:
       path: dotfiles/git/gitignore
       create: true
-    ~/.config/tmux/tmux.conf:
-      path: dotfiles/tmux/tmux.conf
+    ~/.config/tmux:
+      path: dotfiles/tmux
+      create: true
+      relative: true
+    ~/.config/kitty:
+      path: dotfiles/kitty
       create: true
     ~/.config/docker/config.json:
       path: dotfiles/docker/config.json
