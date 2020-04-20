@@ -2,17 +2,12 @@
     ~/.config/git/config:
       create: true
       path: dotfiles/git/config
-    ~/.Xresources-regolith:
-      path: dotfiles/Xresources/root
-    ~/.config/Xresources/color-one-dark:
-      create: true
-      path: dotfiles/Xresources/color-one-dark
-    ~/.config/regolith/i3/config:
-      create: true
-      path: dotfiles/i3/config
     ~/.config/alacritty/alacritty.yml:
       create: true
       path: dotfiles/alacritty/alacritty.yml
-    ~/.config/Xmodmap/remap:
+    ~/.Xmodmap:
       create: true
       path: dotfiles/Xmodmap
+    ~/.config/sway/config:
+      create: true
+      path: dotfiles/sway/config

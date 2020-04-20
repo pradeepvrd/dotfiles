@@ -84,7 +84,7 @@ endif
 let g:mapleader = " "
 
 set history=500
-set clipboard=unnamed
+set clipboard+=unnamedplus
 set hidden
 set noshowmode      " redundant since lighline shows the same info
 " }}}
