@@ -87,6 +87,8 @@ set history=500
 set clipboard+=unnamedplus
 set hidden
 set noshowmode      " redundant since lighline shows the same info
+
+let g:netrw_home=$XDG_CACHE_HOME . '/nvim'
 " }}}
 
 " Colors {{{

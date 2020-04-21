@@ -81,3 +81,4 @@ export PATH=$HOME/bin:$PATH
 
 [ -e "$ZDOTDIR/privaterc" ] && source "$ZDOTDIR/privaterc"
 
+alias dotedit="cd ~/stash/dotfiles && nvim ."

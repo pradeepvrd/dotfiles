@@ -1,0 +1,4 @@
+mode=run
+allow_images=true
+insensitive=true
+term=kitty

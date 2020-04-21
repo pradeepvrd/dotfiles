@@ -1,0 +1,12 @@
+profile roaming {
+  output eDP-1 enable scale 2
+}
+
+profile multihead {
+  output eDP-1 disable
+  output DP-1 enable mode 2560x1440@144Hz position 0,0
+  output DP-2 enable mode 2560x1440@144Hz position 2560,0
+
+  exec swaymsg workspace 1, move workspace to output DP-1
+  exec swaymsg workspace 2, move workspace to output DP-2
+}

@@ -3,5 +3,6 @@
   "python.jediEnabled": false,
   "python.formatting.provider": "black",
   "python.formatting.blackPath": "/usr/local/bin/black",
-  "coc.preferences.currentFunctionSymbolAutoUpdate": true
+  "coc.preferences.currentFunctionSymbolAutoUpdate": true,
+  "explorer.icon.enableNerdfont": true
 }

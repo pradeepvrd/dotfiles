@@ -11,3 +11,12 @@
     ~/.config/sway/config:
       create: true
       path: dotfiles/sway/config
+    ~/.config/kanshi/config:
+      create: true
+      path: dotfiles/kanshi/config
+    ~/.config/waybar:
+      create: true
+      path: dotfiles/waybar
+    ~/.config/wofi:
+      create: true
+      path: dotfiles/wofi

@@ -4,5 +4,6 @@
 [core]
 	pager = diff-so-fancy | less --tabs=4 -RFX
     excludesfile = ~/.config/git/gitignore
+	editor = nvim
 [diff-so-fancy]
 	markEmptyLines = false

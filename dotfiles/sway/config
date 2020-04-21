@@ -18,10 +18,14 @@ set $term kitty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu dmenu_path | dmenu | xargs swaymsg exec --
+set $menu killall wofi || wofi
+set $bin /home/pvaradharajan/bin
 
 # disable title bars
 default_border none
+
+# set innter gaps
+gaps inner 8
 
 ### Output configuration
 #
@@ -34,23 +38,15 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
-set $laptop eDP-1
-bindswitch lid:on output $laptop disable
-bindswitch lid:off output $laptop enable
-
-output eDP-1 pos 0 0 scale 2
-output DP-2 pos 1920 0 mode 2560x1440@144Hz
-output DP-1 pos 4480 0 mode 2560x1440@144Hz
-
 ### Idle configuration
 #
 # Example configuration:
 #
-exec swayidle -w \
-         timeout 300 'swaylock -f -c 000000' \
+exec_always swayidle -w \
+         timeout 300 'swaylock -f -i /home/pvaradharajan/Pictures/lockscreen.jpg' \
          timeout 600 'swaymsg "output * dpms off"' \
               resume 'swaymsg "output * dpms on"' \
-         before-sleep 'swaylock -f -c 000000'
+         before-sleep 'swaylock -f -i /home/pvaradharajan/Pictures/lockscreen.jpg'
 
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -196,12 +192,16 @@ input type:touchpad {
     bindsym $mod+minus scratchpad show
 
     # multimedia key bindings
-    bindsym XF86AudioRaiseVolume exec pamixer -ui 2 && pamixer --get-volume > $SWAYSOCK.wob
-    bindsym XF86AudioLowerVolume exec pamixer -ud 2 && pamixer --get-volume > $SWAYSOCK.wob
-    bindsym XF86AudioMute exec pamixer --toggle-mute && ( pamixer --get-mute && echo 0 > $SWAYSOCK.wob ) || pamixer --get-volume > $SWAYSOCK.wob
+    bindsym XF86AudioRaiseVolume exec pamixer -ui 2 && pamixer --get-volume | $bin/wob-input.sh > $SWAYSOCK.wob
+    bindsym XF86AudioLowerVolume exec pamixer -ud 2 && pamixer --get-volume | $bin/wob-input.sh > $SWAYSOCK.wob
+    bindsym XF86AudioMute exec pamixer --toggle-mute && ( pamixer --get-mute && echo 0 | $bin/wob-input.sh > $SWAYSOCK.wob ) || pamixer --get-volume | $bin/wob-input.sh > $SWAYSOCK.wob
 
-    bindsym XF86MonBrightnessDown exec brightnessctl set 5%- | grep "Current brightness" | awk -F"[(%)]" '{print $2}' > $SWAYSOCK.wob
-    bindsym XF86MonBrightnessUp exec brightnessctl set +5% | grep "Current brightness" | awk -F"[(%)]" '{print $2}' > $SWAYSOCK.wob
+    bindsym XF86MonBrightnessDown exec brightnessctl set 5%- | grep "Current brightness" | awk -F"[(%)]" '{print $2}' | $bin/wob-input.sh > $SWAYSOCK.wob
+    bindsym XF86MonBrightnessUp exec brightnessctl set +5% | grep "Current brightness" | awk -F"[(%)]" '{print $2}' | $bin/wob-input.sh > $SWAYSOCK.wob
+
+    # dismiss notifications
+    bindsym $mod+Shift+n exec makoctl dismiss
+    bindsym $mod+Ctrl+Shift+n exec makoctl dismiss --all
 #
 # Resizing containers:
 #
@@ -232,19 +232,11 @@ bindsym $mod+r mode "resize"
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
-    position top
-
-    # When the status_command prints a new line to stdout, swaybar updates.
-    # The default just shows the current date and time.
-    status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
-
-    colors {
-        statusline #ffffff
-        background #323232
-        inactive_workspace #32323200 #32323200 #5c5c5c
-    }
+    swaybar_command /home/pvaradharajan/.config/waybar/waybar.sh
 }
 
 include /etc/sway/config.d/*
 
-exec mkfifo $SWAYSOCK.wob && tail -f $SWAYSOCK.wob | wob
+exec_always $bin/wob.sh
+exec_always mako
+exec_always kanshi
