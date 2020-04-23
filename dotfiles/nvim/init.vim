@@ -214,6 +214,11 @@ function! CocCurrentFunction()
     return get(b:, 'coc_current_function', '')
 endfunction
 
+function! LightLineGitStatus() abort
+  let status = get(g:, 'coc_git_status', '')
+  return status
+endfunction
+
 " Use `:Format` to format current buffer
 command! -nargs=0 Format :call CocAction('format')
 
@@ -268,13 +273,14 @@ let g:lightline = {
       \              [ 'filetype' ] ]
       \ },
       \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead',
+      \   'gitbranch': 'LightLineGitStatus',
       \   'cocstatus': 'coc#status',
       \   'currentfunction': 'CocCurrentFunction',
       \ },
       \ }
 
 autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+autocmd User CocGitStatusChange call lightline#update()
 " }}}
 
 " Source extra configs {{{
@@ -287,7 +293,9 @@ endfunction
 call SourceIfExists(stdpath('config') . '/docker.vim')
 " }}}
 
-" remote yank {{{
+" Custom Functions {{{
+"
+" remote yank
 " copy to attached terminal using the yank(1) script:
 " https://github.com/sunaku/home/blob/master/bin/yank
 function! Yank(text) abort
@@ -297,6 +305,18 @@ function! Yank(text) abort
   else
     call writefile([escape], '/dev/tty', 'b')
   endif
+endfunction
+
+function! QuickFix_toggle()
+    for i in range(1, winnr('$'))
+        let bnum = winbufnr(i)
+        if getbufvar(bnum, '&buftype') == 'quickfix'
+            cclose
+            return
+        endif
+    endfor
+
+    copen
 endfunction
 " }}}
 
@@ -342,7 +362,7 @@ nnoremap <leader>f :Rg<CR>
 nnoremap <leader>/ :Lines<CR>
 
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? coc#_select_confirm() :
+      \ pumvisible() ? "\<C-n>" :
       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
       \ <SID>check_back_space() ? "\<TAB>" :
       \ coc#refresh()
@@ -354,9 +374,13 @@ inoremap <silent><expr> <c-space> coc#refresh()
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
 
-" Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+" Use `[d` and `]d` to navigate diagnostics
+nmap <silent> [d <Plug>(coc-diagnostic-prev)
+nmap <silent> ]d <Plug>(coc-diagnostic-next)
+
+" navigate chunks of current buffer
+nmap [g <Plug>(coc-git-prevchunk)
+nmap ]g <Plug>(coc-git-nextchunk)
 
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
@@ -370,8 +394,16 @@ nnoremap <silent> K :call <SID>show_documentation()<CR>
 " Remap for rename current word
 nmap <leader>rn <Plug>(coc-rename)
 
+nnoremap <silent> coq :call QuickFix_toggle()<cr>
+
 " Remap for format selected region
 xmap <leader>b  :Format<CR>
 nmap <leader>b  :Format<CR>
+
+" mapping for opening lists
+nmap <leader>tl :CocList tasks<CR>
+nmap <leader>tr :CocListResume<CR>
+nmap <leader>te :AsyncTaskEdit<CR>
+nmap <leader>tt :AsyncTask<space>
 " }}}
 
