@@ -45,6 +45,7 @@ Plug 'pradeepvrd/tmux-zsh-vim-titles'                                        " s
 Plug 'joshdick/onedark.vim'
 Plug 'morhetz/gruvbox'
 Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'ayu-theme/ayu-vim'
 Plug 'itchyny/lightline.vim'                                                 " Configurable statusline
 Plug 'edkolev/tmuxline.vim', {'on': 'Tmuxline'}                              " Generates tmux statusline to match vim status line
 
@@ -93,12 +94,14 @@ let g:netrw_home=$XDG_CACHE_HOME . '/nvim'
 
 " Colors {{{
 syntax on
-silent! colorscheme onedark
-set bg=dark
 
 if (has("termguicolors"))
   set termguicolors
 endif
+
+let ayucolor="mirage"
+silent! colorscheme ayu
+set bg=dark
 " }}}
 
 " Spaces & Tabs {{{
@@ -172,6 +175,7 @@ autocmd FileType gitcommit setlocal textwidth=72
 
 " coc settings {{{
 let g:coc_global_extensions = [
+  \ "coc-clangd",
   \ "coc-docker",
   \ "coc-explorer",
   \ "coc-floaterm",
@@ -264,7 +268,7 @@ command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
 
 " lightline {{{
 let g:lightline = {
-      \ 'colorscheme': 'onedark',
+      \ 'colorscheme': 'ayu',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ],

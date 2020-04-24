@@ -1,0 +1,11 @@
+- link:
+    ~/.config/git/config:
+      create: true
+      path: dotfiles/git/config
+    ~/.config/Xmodmap/remap:
+      create: true
+      path: dotfiles/Xmodmap
+    ~/.config/regolith/i3:
+      create: true
+      path: dotfiles/i3
+

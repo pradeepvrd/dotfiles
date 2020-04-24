@@ -81,4 +81,20 @@ export PATH=$HOME/bin:$PATH
 
 [ -e "$ZDOTDIR/privaterc" ] && source "$ZDOTDIR/privaterc"
 
-alias dotedit="cd ~/stash/dotfiles && nvim ."
+_exists() {
+  type "$1" >/dev/null 2>&1
+}
+
+_exists nvim && alias dotedit="cd ~/stash/dotfiles && nvim ."
+
+session_type="$(loginctl show-session "$XDG_SESSION_ID" -p Type --value)"
+if [ "$session_type" = x11 ]; then
+  _exists xclip && \
+    alias copy="xclip -selection clipboard" && \
+    alias paste="xclip -o -selection clipboard"
+elif [ "$session_type" = wayland ]; then
+  _exists wl-copy && alias copy="wl-copy"
+  _exists wl-paste && alias paste="wl-paste"
+fi
+
+alias zsrc="source ${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/.zshrc"
