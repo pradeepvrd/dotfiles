@@ -23,3 +23,6 @@
     ~/.config/docker/config.json:
       path: dotfiles/docker/config.json
       create: true
+    ~/.config/doom:
+      path: dotfiles/doom
+      create: true

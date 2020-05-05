@@ -34,6 +34,7 @@ Plug 'tpope/vim-unimpaired'                                                  " p
 Plug 'tpope/vim-fugitive'                                                    " awesome git plugin
 Plug 'tpope/vim-commentary'                                                  " easy commenting and uncommenting
 Plug 'godlygeek/tabular'                                                     " tabularize stuff based on markers
+Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/fzf'                                                          " fuzzy searching
 Plug 'junegunn/fzf.vim'                                                      " fuzzy searching vim specific support
 
@@ -58,6 +59,7 @@ Plug 'othree/javascript-libraries-syntax.vim'                                " r
 Plug 'HerringtonDarkholme/yats.vim', {'for': 'typescript'}                   " Typescript
 Plug 'ekalinin/Dockerfile.vim', {'for': 'dockerfile'}                        " Dockerfile
 Plug 'martinda/Jenkinsfile-vim-syntax', {'for': 'groovy'}                    " Jenkinsfile
+Plug 'fatih/vim-go'
 
 " IDE like functionality
 Plug 'neoclide/coc.nvim', {'branch': 'release'}                              " automcompletion and bunch of other stuff
@@ -100,7 +102,7 @@ if (has("termguicolors"))
 endif
 
 let ayucolor="mirage"
-silent! colorscheme ayu
+silent! colorscheme dracula
 set bg=dark
 " }}}
 
@@ -171,6 +173,7 @@ autocmd BufWinEnter * silent! :%foldopen!
 autocmd BufEnter Dockerfile* :setlocal filetype=Dockerfile
 autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
 autocmd FileType gitcommit setlocal textwidth=72
+au BufRead,BufNewFile *.tmpl set filetype=gohtmltmpl
 " }}}
 
 " coc settings {{{
@@ -268,7 +271,7 @@ command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
 
 " lightline {{{
 let g:lightline = {
-      \ 'colorscheme': 'ayu',
+      \ 'colorscheme': 'dracula',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ],
@@ -285,6 +288,24 @@ let g:lightline = {
 
 autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 autocmd User CocGitStatusChange call lightline#update()
+" }}}
+
+" {{{ vim-go
+let g:go_code_completion_enabled = 0
+let g:go_def_mapping_enabled = 0
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_format_strings = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_function_parameters = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_types = 1
+let g:go_fmt_autosave = 0
+let g:go_fmt_fail_silently = 1
 " }}}
 
 " Source extra configs {{{
@@ -409,5 +430,8 @@ nmap <leader>tl :CocList tasks<CR>
 nmap <leader>tr :CocListResume<CR>
 nmap <leader>te :AsyncTaskEdit<CR>
 nmap <leader>tt :AsyncTask<space>
+
+nmap ga <Plug>(EasyAlign)
+xmap ga <Plug>(EasyAlign)
 " }}}
 
